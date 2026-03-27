@@ -59,9 +59,8 @@ flowchart LR
     P3-02 & P3-03 --> P4-01 & P4-02
 
     %% ステータス色（進捗ボードと同期して更新）
-    class SETUP-01,SETUP-02,SETUP-03,BE-01,BE-02,BE-03,BE-04,BE-05,FE-01,FE-02,FE-03,FE-04,FE-05,FE-06,P2-01,P2-02,P2-03,P2-04,P3-01,P3-02 done
+    class SETUP-01,SETUP-02,SETUP-03,BE-01,BE-02,BE-03,BE-04,BE-05,FE-01,FE-02,FE-03,FE-04,FE-05,FE-06,P2-01,P2-02,P2-03,P2-04,P3-01,P3-02,P3-03 done
     class P4-01,P4-02 pending
-    class P3-03 inProgress
 ```
 
 ---
@@ -106,7 +105,7 @@ flowchart LR
 | P2-04        | done        | ClaudeCode-2 |
 | P3-01        | done        | ClaudeCode-L |
 | P3-02        | done        | ClaudeCode-2 |
-| P3-03        | in_progress | ClaudeCode-3 + ClaudeCode-4 |
+| P3-03        | done        | ClaudeCode-3 + ClaudeCode-4 |
 | P4-01        | pending     | -           |
 | P4-02        | pending     | -           |
 

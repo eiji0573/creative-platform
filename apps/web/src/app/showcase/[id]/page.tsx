@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import ImageCommentOverlay from '@/components/showcase/ImageCommentOverlay'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
@@ -33,6 +34,28 @@ interface UserProfile {
   avatar_url: string | null
 }
 
+interface ImageComment {
+  id: string
+  body: string
+  pos_x: number
+  pos_y: number
+  created_at: string
+  user_id: string
+  users: { display_name: string | null; avatar_url: string | null } | null
+}
+
+async function getImageComments(workId: string): Promise<ImageComment[]> {
+  try {
+    const res = await fetch(`${API_BASE}/showcase/${workId}/image-comments`, {
+      next: { revalidate: 0 },
+    })
+    if (!res.ok) return []
+    return res.json()
+  } catch {
+    return []
+  }
+}
+
 async function getUserProfile(userId: string): Promise<UserProfile | null> {
   try {
     const res = await fetch(`${API_BASE}/users/${userId}`, {
@@ -61,7 +84,10 @@ export default async function ShowcaseDetailPage(props: {
     notFound()
   }
 
-  const author = await getUserProfile(work.user_id)
+  const [author, imageComments] = await Promise.all([
+    getUserProfile(work.user_id),
+    getImageComments(id),
+  ])
 
   const authorName = author?.display_name ?? author?.username ?? '不明'
   const isOwner = session?.user?.id === work.user_id
@@ -97,12 +123,14 @@ export default async function ShowcaseDetailPage(props: {
 
       {/* Work Detail */}
       <main className="max-w-3xl mx-auto px-4 py-10">
-        {/* Image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={work.image_url}
-          alt={work.title}
-          className="w-full aspect-video object-cover rounded-xl mb-8 shadow-sm"
+        {/* Image with comment overlay */}
+        <ImageCommentOverlay
+          workId={work.id}
+          imageUrl={work.image_url}
+          imageAlt={work.title}
+          initialComments={imageComments}
+          currentUserId={session?.user?.id}
+          accessToken={session?.access_token}
         />
 
         {/* Title */}
