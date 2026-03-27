@@ -129,6 +129,33 @@ export class ArticlesService {
     return data;
   }
 
+  /** フォロー中ユーザーの公開記事フィードを取得 */
+  async getFeed(userId: string) {
+    // フォロー中のユーザーIDを取得
+    const { data: follows, error: followsError } = await this.supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', userId);
+
+    if (followsError) throw followsError;
+
+    if (!follows || follows.length === 0) {
+      return [];
+    }
+
+    const followingIds = follows.map((f) => f.following_id);
+
+    const { data, error } = await this.supabase
+      .from('articles')
+      .select('id, user_id, title, thumbnail_url, status, created_at, updated_at')
+      .eq('status', 'published')
+      .in('user_id', followingIds)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data;
+  }
+
   /** オーナー確認ヘルパー */
   private async assertOwner(id: string, userId: string) {
     const { data, error } = await this.supabase

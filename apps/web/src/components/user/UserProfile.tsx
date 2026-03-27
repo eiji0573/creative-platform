@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import FollowButton from './FollowButton'
 
 export type UserProfileData = {
   id: string
@@ -25,13 +26,29 @@ export type ArticleCard = {
   author_id: string
 }
 
+type FollowStatus = {
+  followers_count: number
+  following_count: number
+  is_following: boolean
+}
+
 type Props = {
   profile: UserProfileData
   articles: ArticleCard[]
   isOwner: boolean
+  followStatus: FollowStatus
+  currentUserId?: string
+  accessToken?: string
 }
 
-export default function UserProfile({ profile, articles, isOwner }: Props) {
+export default function UserProfile({
+  profile,
+  articles,
+  isOwner,
+  followStatus,
+  currentUserId,
+  accessToken,
+}: Props) {
   const displayName = profile.display_name ?? '名無しユーザー'
   const avatarUrl = profile.avatar_url
 
@@ -69,10 +86,39 @@ export default function UserProfile({ profile, articles, isOwner }: Props) {
               </Link>
             )}
           </div>
+
+          {/* フォロー情報 */}
+          <div className="flex items-center gap-4 mt-2">
+            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+              フォロワー{' '}
+              <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                {followStatus.followers_count}
+              </span>
+            </span>
+            <span className="text-sm text-zinc-500 dark:text-zinc-400">
+              フォロー中{' '}
+              <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                {followStatus.following_count}
+              </span>
+            </span>
+          </div>
+
           {profile.bio && (
             <p className="mt-2 text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap">
               {profile.bio}
             </p>
+          )}
+
+          {/* フォローボタン（自分以外・ログイン中のみ） */}
+          {!isOwner && currentUserId && accessToken && (
+            <div className="mt-3">
+              <FollowButton
+                targetUserId={profile.id}
+                initialIsFollowing={followStatus.is_following}
+                initialFollowersCount={followStatus.followers_count}
+                accessToken={accessToken}
+              />
+            </div>
           )}
         </div>
       </div>

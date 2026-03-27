@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import ArticleContent from '@/components/article/ArticleContent'
+import LikeButton from '@/components/article/LikeButton'
+import CommentsSection from '@/components/article/CommentsSection'
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
@@ -28,6 +30,51 @@ interface Article {
   author_id: string
   created_at: string
   updated_at: string
+}
+
+interface CommentAuthor {
+  display_name: string | null
+  avatar_url: string | null
+}
+
+interface Comment {
+  id: string
+  body: string
+  created_at: string
+  user_id: string
+  users: CommentAuthor | null
+}
+
+async function getComments(articleId: string): Promise<Comment[]> {
+  try {
+    const res = await fetch(`${API_BASE}/articles/${articleId}/comments`, {
+      next: { revalidate: 0 },
+    })
+    if (!res.ok) return []
+    return res.json()
+  } catch {
+    return []
+  }
+}
+
+async function getLikes(
+  articleId: string,
+  accessToken?: string,
+): Promise<{ count: number; liked: boolean }> {
+  try {
+    const headers: HeadersInit = {}
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`
+    }
+    const res = await fetch(`${API_BASE}/articles/${articleId}/likes`, {
+      headers,
+      next: { revalidate: 0 },
+    })
+    if (!res.ok) return { count: 0, liked: false }
+    return res.json()
+  } catch {
+    return { count: 0, liked: false }
+  }
 }
 
 async function getArticle(id: string, accessToken?: string): Promise<Article | null> {
@@ -58,7 +105,11 @@ export default async function ArticleDetailPage(props: {
     data: { session },
   } = await supabase.auth.getSession()
 
-  const article = await getArticle(id, session?.access_token)
+  const [article, likes, comments] = await Promise.all([
+    getArticle(id, session?.access_token),
+    getLikes(id, session?.access_token),
+    getComments(id),
+  ])
 
   if (!article) {
     notFound()
@@ -143,6 +194,16 @@ export default async function ArticleDetailPage(props: {
           )}
         </div>
 
+        {/* Like */}
+        <div className="flex items-center gap-3 mb-6">
+          <LikeButton
+            articleId={article.id}
+            initialCount={likes.count}
+            initialLiked={likes.liked}
+            accessToken={session?.access_token}
+          />
+        </div>
+
         {/* Tags */}
         {article.tags && article.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-8">
@@ -159,6 +220,14 @@ export default async function ArticleDetailPage(props: {
 
         {/* Content */}
         <ArticleContent content={article.content} />
+
+        {/* Comments */}
+        <CommentsSection
+          articleId={article.id}
+          initialComments={comments}
+          currentUserId={session?.user?.id}
+          accessToken={session?.access_token}
+        />
       </main>
     </div>
   )

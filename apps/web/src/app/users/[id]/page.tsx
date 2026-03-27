@@ -24,6 +24,24 @@ async function getUserArticles(id: string): Promise<ArticleCard[]> {
   }
 }
 
+async function getFollowStatus(
+  userId: string,
+  accessToken?: string,
+): Promise<{ followers_count: number; following_count: number; is_following: boolean }> {
+  try {
+    const headers: Record<string, string> = {}
+    if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`
+    const res = await fetch(`${API_URL}/users/${userId}/follow-status`, {
+      cache: 'no-store',
+      headers,
+    })
+    if (!res.ok) return { followers_count: 0, following_count: 0, is_following: false }
+    return res.json()
+  } catch {
+    return { followers_count: 0, following_count: 0, is_following: false }
+  }
+}
+
 export default async function UserPage({
   params,
 }: {
@@ -31,22 +49,31 @@ export default async function UserPage({
 }) {
   const { id } = await params
 
-  const [profile, articles] = await Promise.all([
+  const supabase = await createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const [profile, articles, followStatus] = await Promise.all([
     getUser(id),
     getUserArticles(id),
+    getFollowStatus(id, session?.access_token),
   ])
 
   if (!profile) {
     notFound()
   }
 
-  // ログインユーザーを確認して isOwner を判定
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const isOwner = session?.user?.id === profile.id
 
-  const isOwner = user?.id === profile.id
-
-  return <UserProfile profile={profile} articles={articles} isOwner={isOwner} />
+  return (
+    <UserProfile
+      profile={profile}
+      articles={articles}
+      isOwner={isOwner}
+      followStatus={followStatus}
+      currentUserId={session?.user?.id}
+      accessToken={session?.access_token}
+    />
+  )
 }
