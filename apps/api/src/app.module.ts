@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { UploadModule } from './upload/upload.module';
 import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
+import { FollowsModule } from './follows/follows.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CommentsModule } from './comments/comments.module';
     UploadModule,
     LikesModule,
     CommentsModule,
+    FollowsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

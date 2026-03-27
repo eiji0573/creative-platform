@@ -102,7 +102,7 @@ flowchart LR
 | FE-06        | done        | ClaudeCode-4 |
 | P2-01        | done        | ClaudeCode-1 |
 | P2-02        | done        | ClaudeCode-2 |
-| P2-03        | in_progress | ClaudeCode-4 |
+| P2-03        | done        | ClaudeCode-4 |
 | P2-04        | pending     | -           |
 | P3-01        | pending     | -           |
 | P3-02        | pending     | -           |
