@@ -7,7 +7,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
 async function getFeed(accessToken: string): Promise<ArticleSummary[]> {
   try {
-    const res = await fetch(`${API_BASE}/articles/feed`, {
+    const res = await fetch(`${API_BASE}/feed`, {
       headers: { Authorization: `Bearer ${accessToken}` },
       next: { revalidate: 0 },
     })
