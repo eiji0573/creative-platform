@@ -33,6 +33,16 @@ export class ArticlesController {
   }
 
   /**
+   * GET /api/articles/feed
+   * フォローユーザーの公開記事フィード（要認証）
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get('feed')
+  getFeed(@CurrentUser() user: CurrentUserPayload) {
+    return this.articlesService.getFeed(user.userId);
+  }
+
+  /**
    * GET /api/articles/:id
    * 記事詳細を取得
    * - 公開済み記事は誰でも閲覧可能
