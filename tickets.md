@@ -99,9 +99,9 @@ flowchart LR
 | FE-04        | done        | ClaudeCode-2 |
 | FE-05        | done        | ClaudeCode-4 |
 | FE-06        | done        | ClaudeCode-4 |
-| P2-01        | pending     | -           |
-| P2-02        | pending     | -           |
-| P2-03        | pending     | -           |
+| P2-01        | in_progress | ClaudeCode-1 |
+| P2-02        | in_progress | ClaudeCode-2 |
+| P2-03        | in_progress | ClaudeCode-4 |
 | P2-04        | pending     | -           |
 | P3-01        | pending     | -           |
 | P3-02        | pending     | -           |

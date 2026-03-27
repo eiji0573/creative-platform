@@ -8,6 +8,8 @@ import { ArticlesModule } from './articles/articles.module';
 import { TagsModule } from './tags/tags.module';
 import { UsersModule } from './users/users.module';
 import { UploadModule } from './upload/upload.module';
+import { LikesModule } from './likes/likes.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { UploadModule } from './upload/upload.module';
     TagsModule,
     UsersModule,
     UploadModule,
+    LikesModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
