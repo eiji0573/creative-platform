@@ -12,6 +12,7 @@ import { LikesModule } from './likes/likes.module';
 import { CommentsModule } from './comments/comments.module';
 import { FollowsModule } from './follows/follows.module';
 import { FeedModule } from './feed/feed.module';
+import { ShowcaseModule } from './showcase/showcase.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { FeedModule } from './feed/feed.module';
     CommentsModule,
     FollowsModule,
     FeedModule,
+    ShowcaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
